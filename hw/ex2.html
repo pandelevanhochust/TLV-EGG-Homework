@@ -5,21 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
   </head>
+
   <body>
-    <div class="container not-reveal" id="egg-1">
-      <h1 class="egg-name">Name here</h1>
-      <button class="egg-btn">Reveal</button>
-    </div>
-    <div class="container reveal" id="egg-1">
-      <h1 class="egg-name">Name here</h1>
-      <div class="egg-inf">
-        <p class="egg-age">Age: ...</p>
-        <p class="egg-ban">Ban: ...</p>
-        <p class="egg-role">Chuc vu: ...</p>
-      </div>
-      <button class="egg-btn">hide</button>
-    </div>
+
+    <div id="members"></div>
+
   </body>
+
+
   <script>
     const data = {
       1: {
@@ -43,7 +36,15 @@
         ban: "giao duc",
         "chuc vu": "chu nhiem",
       },
+      5:{
+        name: "Le Van Toan",
+        birthdate: new Date('2004-01-01'),
+        ban: "truyen thong",
+        "chuc vu": NaN,
+      }
     };
+
+    console.log(data);
 
     // Hàm này lấy input là data như trên và thực hiện thêm một thẻ div có id là egg-{id} và class container vào body của DOM
     // Thể div egg-{1} chỉ chứa name của một thành viên (trong the h1 class egg-name) và một nút reveal (the button class egg-btn)
@@ -55,6 +56,52 @@
 
     // Có thể tách ra nhiều hàm con
     // Submit tất cả code trong 1 file .html
-    function addMemberCard(d) {}
+
+    function calculateAge(birthdate) {
+      const diff = Date.now() - birthdate.getTime();
+      const ageDate = new Date(diff);
+      return Math.abs(ageDate.getUTCFullYear() - 1970);
+    }
+
+    function createMemberCard(id, member) {
+      const container = document.createElement('div');
+      container.className = 'container not-reveal';
+      container.id = `egg-${id}`;
+
+      container.innerHTML = `
+        <h1 class="egg-name">${member.name}</h1>
+        <button class="egg-btn">Reveal</button>
+        <div class="egg-inf reveal">
+          <p class="egg-age">Age: ${calculateAge(member.birthdate)}</p>
+          <p class="egg-ban">Ban: ${member.ban}</p>
+          <p class="egg-role">Chuc vu: ${member["chuc vu"] || "thanh vien"}</p>
+        </div>
+      `;
+
+      const button = container.querySelector('.egg-btn');
+      const infoDiv = container.querySelector('.egg-inf');
+
+      button.addEventListener('click', () => {
+        if (infoDiv.style.display === 'none' || infoDiv.style.display === '') {
+          infoDiv.style.display = 'block';
+          button.textContent = 'Hide';
+        } else {
+          infoDiv.style.display = 'none';
+          button.textContent = 'Reveal';
+        }
+      });
+
+      return container;
+    }
+
+    function addMemberCards(data) {
+      const membersDiv = document.getElementById('members');
+      for (const id in data) {
+          const memberCard = createMemberCard(id, data[id]);
+          membersDiv.appendChild(memberCard);
+      }
+    }
+
+    addMemberCards(data);
   </script>
 </html>
